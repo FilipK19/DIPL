@@ -1,0 +1,118 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+         <style>
+            body {
+                text-align: center;
+                margin: 20px;
+                color: #001861;
+            }
+            h1 {
+                margin: 5px 0;
+                font-family: "Book Antiqua", Palatino, serif;
+                font-size: 48px;
+                color: #001861;
+            }
+            h2 {
+                margin: 5px 0;
+                font-family: "Book Antiqua", Palatino, serif;
+                font-size: 64px;
+                color: #001861;
+            }
+            p {
+                margin: 65px;
+                color: #001861;
+            }
+            .input-container {
+                width: 300px;
+                margin: 30px auto;
+                text-align: left;
+            }
+            label {
+                display: block;
+                margin-bottom: 5px;
+            }
+            input {
+                width: 100%;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                color: #00274D;
+                background-color: #fff;
+                border: 2px solid #001861;
+                border-radius: 20px;
+            }
+            .error-message {
+                color: red;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to</h1>
+        <h2>Collaborate</h2>
+        <p> </p>
+
+        <form id="loginForm">
+            <div class="input-container">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Input username" required><br>
+            </div>
+        
+            <div class="input-container">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Password" required><br>
+            </div>
+        
+            <button type="button" onclick="submitLoginForm()">Login</button>
+            
+            <a href="/register">
+                <button type="button">Register</button>
+            </a>
+        </form>
+
+        <script>
+            async function submitLoginForm() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+        
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+        
+                try {
+                    const response = await fetch('/token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: formData,
+                    });
+        
+                    if (response.ok) {
+                        const data = await response.json();
+        
+                        // Store the access token securely (e.g., in a cookie or local storage)
+                        document.cookie = `access_token=${data.access_token}; path=/; secure; samesite=strict`;
+        
+                        console.log('Access Token:', data.access_token);
+        
+                        window.location.href = '/home';
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Error:', errorData.detail);
+                        // Handle login error, e.g., display error message to the user
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        </script>
+    </body>
+</html>

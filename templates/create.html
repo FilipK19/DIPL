@@ -1,0 +1,76 @@
+<html>
+<head>
+    <title>Create</title>
+     <style>
+        body {
+            text-align: center;
+            margin: 20px;
+            font-size: 30px;
+            color: #001861;
+        }
+        h1 {
+            margin: 5px 0;
+            font-family: "Book Antiqua", Palatino, serif;
+            font-size: 65px;
+            color: #001861;
+        }
+        p {
+            margin: 80px;
+        }
+        .button {
+            padding: 10px 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            color: #001861;
+            background-color: #fff;
+            border: 2px solid #001861;
+            border-radius: 20px;
+            margin: 20px;
+        }
+        .custom-space {
+            margin-right: 65px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Collaborate</h1>
+    <p></p>
+    <form id="createForm" action="/create_document/" method="post">
+        <label for="name">Name:<span class="custom-space"></span></label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required><br>
+
+        <button class="button" onclick="goToHome()">Go to home</button>
+        <button class="button" type="button" onclick="createDocument()">Create Document</button>
+
+    </form>
+    <script>
+        function createDocument() {
+            const formData = new FormData(document.getElementById('createForm'));
+
+            fetch('/create_document/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Document created successfully!");
+                    goToHome();
+                } else {
+                    alert("Error creating document");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        function goToHome() {
+            window.location.href = '/home';
+        }
+    </script>
+</body>
+</html>

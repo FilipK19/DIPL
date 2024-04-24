@@ -1,0 +1,90 @@
+<html>
+<head>
+    <title>Edit</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin: 5px 0;
+            font-family: "Book Antiqua", Palatino, serif;
+            font-size: 65px;
+            color: #001861;
+        }
+        p {
+            margin: 50px;
+        }
+        .document-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .edit-button, .delete-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            color: #00274D;
+            background-color: #fff;
+            border: 2px solid #001861;
+            border-radius: 20px;
+        }
+        .edit-button {
+            width: 500px;
+            text-align: left;
+        }
+        .space {
+            margin-right: 50px;
+        }
+        .h-button {
+            background-color: #001861;
+            color: #fff;
+            font-size: 16px;
+            border: 5px solid #001861;
+            border-radius: 20px;
+            cursor: pointer;
+            padding: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Collaborate</h1>
+    <p> </p>
+    {% for document in documents %}
+        <div class="document-container">
+            <form method="get" action="/edit_document/{{ document._id }}">
+                <button class="edit-button" type="submit">{{ 'Name: ' ~ document.name }}<span class="space"></span>{{'Description: ' ~ document.description}}</button>
+            </form>
+            <form method="delete" action="/delete/{document_id}">
+                <button class="delete-button" type="button" onclick="confirmDelete('{{ document._id }}')">Delete</button>
+            </form>
+        </div>
+    {% endfor %}
+    <a href="/home">
+        <button type="button" class="h-button">Go to Home</button>
+    </a>
+</body>
+<script>
+    function confirmDelete(documentId) {
+        if (confirm("Are you sure you want to delete this document?")) {
+            fetch('/delete/' + documentId, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                alert('Document successfully deleted');
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        } else {
+            // If canceled, do nothing or handle the cancel action accordingly
+        }
+    }
+</script>
+</html>

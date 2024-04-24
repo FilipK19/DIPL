@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+            color: #001861;
+        }
+        h1 {
+            margin: 5px 0;
+            font-family: "Book Antiqua", Palatino, serif;
+            font-size: 65px;
+            color: #001861;
+        }
+        .input-container {
+            margin-bottom: 10px;
+        }
+        .error-message {
+            color: red;
+        }
+        button {
+            padding: 10px;
+            color: #00274D;
+            background-color: #fff;
+            border: 2px solid #001861;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .input-container {
+            width: 300px;
+            margin: 30px auto;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+    <body>
+        <h1>Collaborate</h1>
+        <p></p>
+        <form id="registrationForm">
+            <div class="input-container">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-container">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button class="button" onclick="goToStart()">Go to Welcome</button>
+            <button type="button" onclick="registerUser()">Register</button>
+
+            <div class="error-message" id="error-message"></div>
+        </form>
+        
+        <script>
+            async function registerUser() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (!username || !password) {
+                    document.getElementById('error-message').innerText = 'Username and password are required.';
+                    return;
+                }
+        
+                const response = await fetch('/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        hashed_password: password
+                    })
+                });
+        
+                if (response.ok) {
+                    alert('User registered successfully!');
+                    window.location.href = 'http://127.0.0.1:8000/';
+                } else {
+                    const data = await response.json();
+                    alert(`Error: ${data.detail}`);
+                }
+            }
+            function goToStart() {
+                window.location.href = '/';
+            }
+        </script>
+    </body>
+</html>

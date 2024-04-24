@@ -1,0 +1,103 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Text Editor</title>
+    <!-- Include Quill styles -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        #editor {
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor"></div>
+
+    <!-- Include Quill library -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        var socket = new WebSocket("ws://" + window.location.host + "/ws/1");
+
+        var editor = new Quill('#editor', {
+            theme: 'snow',
+            direction: 'ltr' // Ensure text direction is left-to-right
+        });
+
+        editor.on('text-change', function(delta, oldDelta, source) {
+            if (source === 'user') {
+                var message = {
+                    id: Date.now(),
+                    text: JSON.stringify(editor.getContents()) // Get text content using Quill API
+                };
+                socket.send(JSON.stringify(message));
+                // Ensure focus remains on the editor after each keystroke
+                editor.focus();
+            }
+        });
+
+// Change this part to set the initial content of the Quill editor
+socket.onmessage = function(event) {
+    var message = JSON.parse(event.data);
+    var selection = editor.getSelection(); // Get current selection
+    // Update editor content with received message
+    editor.setContents(JSON.parse(message.text));
+    editor.setSelection(selection); // Restore selection
+    // Ensure focus remains on the editor after receiving a message
+    editor.focus();
+};
+
+// Add this function to fetch the initial content when the document is opened
+function getInitialContent() {
+    fetch('/get_document/{{ document_id }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.content) {
+                editor.setContents(JSON.parse(data.content));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+// Call the function to fetch initial content when the document is opened
+getInitialContent();
+
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                console.log('Connection closed cleanly');
+            } else {
+                console.error('Connection died');
+            }
+        };
+
+        // Function to submit the Quill content to the server
+        function updateDocument() {
+            var content = JSON.stringify(editor.getContents());
+            var form = new FormData();
+            form.append('content', content);
+            fetch('/update_document/{{ document_id }}', {
+                method: 'POST',
+                body: form,
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Updated successfully');
+                    window.location.href = '/edit';
+                } else {
+                    alert('Update failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+    <!-- Add a button to trigger the update -->
+    <button type="button" onclick="updateDocument()">Update Document</button>
+</body>
+</html>

@@ -194,9 +194,9 @@ async def create_form(request: Request):
     return templates.TemplateResponse("edit.html", {"request": request, "documents": documents})
 
 @app.get("/edit_document/{document_id}", response_class=HTMLResponse)
-async def edit_document(request: Request, document_id: str):
+async def edit_document(request: Request, document_id: str, current_user: User = Depends(getuser)):
     document = get_document(document_id)
-    return templates.TemplateResponse("edit3.html", {"request": request, "document": document, "document_id": document_id})
+    return templates.TemplateResponse("edit2.html", {"request": request, "document": document, "document_id": document_id, "username": current_user.username})
 
 @app.get("/get_document/{document_id}")
 async def get_document_content(document_id: str):

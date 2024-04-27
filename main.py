@@ -152,8 +152,8 @@ async def register(request: Request):
 app.mount("/background", StaticFiles(directory="background"), name="background")
 
 @app.get("/home")
-async def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+async def home(request: Request, current_user: User = Depends(getuser)):
+    return templates.TemplateResponse("home.html", {"request": request, "username": current_user.username})
 
 @app.get("/")
 async def home(request: Request):
@@ -167,7 +167,7 @@ mydb = client2["test"]
 collection = mydb["test"]
 
 @app.get("/create", response_class=HTMLResponse)
-async def create_form(request: Request):
+async def create_form(request: Request, current_user: User = Depends(getuser)):
     documents = collection.find()
     return templates.TemplateResponse("create.html", {"request": request, "documents": documents})
 
@@ -189,7 +189,7 @@ def get_document(document_id: str):
     return None
 
 @app.get("/edit", response_class=HTMLResponse)
-async def create_form(request: Request):
+async def create_form(request: Request, current_user: User = Depends(getuser)):
     documents = collection.find()
     return templates.TemplateResponse("edit.html", {"request": request, "documents": documents})
 

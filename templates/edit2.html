@@ -39,12 +39,14 @@
             }
         });
 
-// Update WebSocket message handler
+// Change this part to set the initial content of the Quill editor
 socket.onmessage = function(event) {
     var message = JSON.parse(event.data);
-    var selection = editor.getSelection();
-    editor.setContents(message.text); // Update editor content
-    editor.setSelection(selection);
+    var selection = editor.getSelection(); // Get current selection
+    // Update editor content with received message
+    editor.setContents(JSON.parse(message.text));
+    editor.setSelection(selection); // Restore selection
+    // Ensure focus remains on the editor after receiving a message
     editor.focus();
 };
 

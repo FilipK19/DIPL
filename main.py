@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, status,  Request, Response, WebSocket
+from fastapi import Depends, FastAPI, HTTPException, status,  Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -14,7 +14,6 @@ from pydantic import BaseModel
 from passlib.context import CryptContext
 
 from typing import List
-from starlette.websockets import WebSocketDisconnect
 
 
 app = FastAPI()

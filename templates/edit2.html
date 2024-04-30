@@ -1,11 +1,9 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-Time Text Editor</title>
-    <!-- Include Quill styles -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
         #editor {
@@ -17,14 +15,18 @@
     {{username}}
     <div id="editor"></div>
 
-    <!-- Include Quill library -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
-        var socket = new WebSocket("ws://" + window.location.host + "/ws/1");
+        
+// Generate a unique client ID
+var clientId = Math.floor(Math.random() * 1000); // You can use any method to generate unique IDs
+
+// Connect to WebSocket endpoint with the generated client ID
+var socket = new WebSocket("ws://" + window.location.host + "/ws/" + clientId);
 
         var editor = new Quill('#editor', {
             theme: 'snow',
-            direction: 'ltr' // Ensure text direction is left-to-right
+            direction: 'ltr'
         });
 
         editor.on('text-change', function(delta, oldDelta, source) {
@@ -51,7 +53,6 @@ socket.onmessage = function(event) {
 };
 
 
-// Add this function to fetch the initial content when the document is opened
 function getInitialContent() {
     fetch('/get_document/{{ document_id }}')
         .then(response => response.json())
@@ -64,19 +65,16 @@ function getInitialContent() {
             console.error('Error:', error);
         });
 }
-
-// Call the function to fetch initial content when the document is opened
 getInitialContent();
 
-        socket.onclose = function(event) {
-            if (event.wasClean) {
-                console.log('Connection closed cleanly');
-            } else {
-                console.error('Connection died');
-            }
-        };
+    socket.onclose = function(event) {
+        if (event.wasClean) {
+            console.log('Connection closed cleanly');
+        } else {
+            console.error('Connection died');
+        }
+    };
 
-        // Function to submit the Quill content to the server
         function updateDocument() {
             var content = JSON.stringify(editor.getContents());
             var form = new FormData();
@@ -99,7 +97,6 @@ getInitialContent();
         }
     </script>
 
-    <!-- Add a button to trigger the update -->
     <button type="button" onclick="updateDocument()">Update Document</button>
 </body>
 </html>
